@@ -1,0 +1,25 @@
+*{
+	padding:0;
+	margin:0;
+	box-sizing:0;
+}
+
+#submit{
+	width:3em;
+	height:1.3em;
+}
+
+.button-style1{
+	height:3em;
+	width:9em;
+}
+
+.container-wrapper{
+	display:flex;
+	flex-direction:column;
+}
+.container{
+	flex-basis:50%;
+	display:flex;
+	gap: 20px;
+}
