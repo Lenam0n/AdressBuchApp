@@ -1,43 +1,53 @@
 var db = [
 {
 	name : "a",
+	nachname : "",
 	telefon : 1223,
-	email : "iahzfoiah@."
+	'e-mail' : "iahzfoiah@."
 }]
 
-var nameinput;
-var telefonInput;
-var emailInput;
-
-
 var wrapper =  document.getElementById("wrapper");
-
+var deleteable = false
 
 
 
 function elementeEinlesen(a){
-		if(document.getElementById("nameInput").value == "") {
+	
+		let numOnlyRegex = /^[0-9]+$/;
+		let lettOnlyRegex = /^[a-zA-Z]+$/;
+		let emailRegex = /^[0-9a-zA-Z-_. ()<>@,;:"[]|ç%&]+$/;
+	
+		if(document.getElementById("nameInput").value == "" ||
+			!lettOnlyRegex.test(document.getElementById("nameInput").value)) {
 			clearInputs()
 			alert("Die Nameneingabe ist ungültig")
-			return;}
-			else {nameInput = document.getElementById("nameInput").value}
-		if(document.getElementById("telefonInput").value == "" || 
+			return false;}
+			else {var nameInput = document.getElementById("nameInput").value}
+		if(document.getElementById("nachnameInput").value == ""||
+			!lettOnlyRegex.test(document.getElementById("nameInput").value)) {
+			clearInputs()
+			alert("Die Nachnameneingabe ist ungültig")
+			return false;}
+			else {var nachnameInput = document.getElementById("nachnameInput").value}
+		if(!numOnlyRegex.test(document.getElementById("telefonInput").value) ||
+			document.getElementById("telefonInput").value == "" || 
 			document.getElementById("telefonInput").value.length >15){
 			clearInputs()
 			alert("Die Telefoneingabe ist ungültig")
-			return;}
-			else {telefonInput = Number(document.getElementById("telefonInput").value)}
+			return false;}
+			else {var telefonInput = Number(document.getElementById("telefonInput").value)}
 		if(document.getElementById("emailInput").value == ""){
 			clearInputs()
 			alert("Die Emaileingabe ist ungültig")
-			return;}
-			else {emailInput = document.getElementById("emailInput").value}
-		if(	document.getElementById("emailInput").value.indexOf('@') === -1 &&
-			document.getElementById("emailInput").value.indexOf('.') === -1){
+			return false;}
+			else {var emailInput = document.getElementById("emailInput").value}
+		if(!emailRegex.test(document.getElementById("emailInput").value ||
+			(document.getElementById("emailInput").value.indexOf('@') === -1 &&
+			document.getElementById("emailInput").value.indexOf('.') === -1))){
 			clearInputs()
 			alert("Die Emaileingabe ist ungültig")
-			return;}
-	addToDb(nameInput , telefonInput, emailInput );
+			return false;}
+	addToDb(nameInput, nachnameInput , telefonInput, emailInput );
 	
 	if(a === "neuer"){alert("neuer Eintrag hinzugefügt")}
 	if(a ==="überarbeitet"){alert("Eintrag wurde überarbeitet")}
@@ -49,12 +59,12 @@ function elementeEinlesen(a){
 }
 function clearInputs(){for(i=0; i < document.getElementsByClassName("inputFelder").length; i++) document.getElementsByClassName("inputFelder")[i].value = "";}
 
-function addToDb(a,b,c){
+function addToDb(a,b,c,d){
 	if(db.length != 0){
 		let stelle = (db.length +1)
-		db.push({name  : a, telefon : b, email : c})
+		db.push({name  : a, nachname: b, telefon : c, 'e-mail' : d})
 	}else{
-		db.push({name  : a, telefon : b, email : c})
+		db.push({name  : a, nachname : b ,telefon : c, 'e-mail' : d})
 	}
 }
 
@@ -65,6 +75,7 @@ function inputBuilder(a,b,c,d){
 }
 function buttonBuilder(){
 	let button = document.createElement("button")
+	button.innerText = "Submit"
 	button.setAttribute("id", "submit")
 
 	return button;
@@ -98,8 +109,9 @@ function wrapperBuilder(){
 	wrapper.appendChild(con)
 	
 	con.appendChild(inputBuilder("inputFelder","text","nameInput","Name"))
-	con.appendChild(inputBuilder("inputFelder","number","telefonInput","Telefonnummer"))
-	con.appendChild(inputBuilder("inputFelder","email","emailInput","Email"))
+	con.appendChild(inputBuilder("inputFelder","text","nachnameInput","Nachname"))
+	con.appendChild(inputBuilder("inputFelder","text","telefonInput","Telefonnummer"))
+	con.appendChild(inputBuilder("inputFelder","email","emailInput","E-mail"))
 	con.appendChild( buttonBuilder())
 	let submit =  document.getElementById("submit");	
 	submit.addEventListener("click", () => {
@@ -107,13 +119,17 @@ function wrapperBuilder(){
 		)
 	}
 
-
 function deleteWrapperChilds(){
 	while (wrapper.firstChild) {
 	  wrapper.removeChild(wrapper.firstChild);
 }}
 
-function arrayEntleeren(){	db.length = 0 }
+function arrayEntleeren(){	
+	if(db.length !== 0){
+		db.length = 0 
+		alert("Alle Kontakte gelöscht")
+	}else{ alert("Du hast keine Kontakte eingetragen") }
+}
 
 
 function homePageBuilder(){
@@ -135,28 +151,13 @@ function ausgebenAllerKontakte(){
 		let conw = document.createElement("div")
 		conw.setAttribute("class", "container-wrapper")
 		conw.addEventListener("click" , function(){
-		
-		let objToRemove = {};
-
-		for (let i = 0; i < document.querySelectorAll("p.key").length; i++) {
-		  let key = document.querySelectorAll("p.key")[i].textContent;
-		  let value = document.querySelectorAll("p.value")[i].textContent;
-		  objToRemove[key] = value;
-		}
-		
-		objToRemove.telefon = parseInt(objToRemove.telefon);
+		if(deleteable === false){
+			let check = window.confirm("Willst du den Eintrag wirklich löschen?")
+			if (!check){	return }
+			else{ deleteable = true }
 			
-		let index = db.findIndex(obj => {
-		  for (let key in objToRemove) {
-			if (obj[key] !== objToRemove[key]) {
-			  return false;
-			}
-		  }
-		  return true;
-		});
-
-		if (index !== -1) {
-		db.splice(index, 1);}
+		}
+		deleteObj(objChange())
 		this.remove()
 		
 		})
@@ -164,22 +165,14 @@ function ausgebenAllerKontakte(){
 		for (let [key, value] of Object.entries(obj)) {
 			let con = document.createElement("div")
 			con.setAttribute("class", "container")
-			
 			con.appendChild(textAusgabenBuilder(key, "key"));
 			con.appendChild(textAusgabenBuilder(value, "value"));
-			
-			
 			conw.appendChild(con)
-
 	}
 		let spacer = document.createElement("span")
 		conw.appendChild(spacer)
 		spacer.innerText = "-----------------------"
-		
-		
-}
-}
-
+}}
 
 function textAusgabenBuilder(a,b){
 	let p = document.createElement("p")
@@ -190,7 +183,6 @@ function textAusgabenBuilder(a,b){
 
 
 function uberarbeiten(){
-	
 	deleteWrapperChilds()
 	if(db.length==0){
 		alert("Du hast keine Kontakte eingetragen")
@@ -202,81 +194,76 @@ function uberarbeiten(){
 		let conw = document.createElement("div")
 		conw.setAttribute("class", "container-wrapper")
 		conw.addEventListener("click" , function(){
-			
-		let objToChange = {};
-
-		for (let i = 0; i < document.querySelectorAll("p.key").length; i++) {
-		  let key = document.querySelectorAll("p.key")[i].textContent;
-		  let value = document.querySelectorAll("p.value")[i].textContent;
-		  objToChange[key] = value;
-		}
+		let obectjO = objChange()
+		let obectj = Object.values(obectjO)	
+		deleteWrapperChilds()
 		
-		let obectj = Object.values(objToChange)	
+		wrapper.appendChild(returnButtonBuilder())
+		let con = document.createElement("div")
+		con.setAttribute("class", "container")
+		wrapper.appendChild(con)
 		
-
-		objToChange.telefon = parseInt(objToChange.telefon);
+		con.appendChild(inputBuilder("inputFelder","text","nameInput",obectj[0]))
+		con.appendChild(inputBuilder("inputFelder","text","nachnameInput",obectj[1]))
+		con.appendChild(inputBuilder("inputFelder","text","telefonInput",obectj[2]))
+		con.appendChild(inputBuilder("inputFelder","email","emailInput",obectj[3]))
+		con.appendChild(buttonBuilder())
 		
-	
+		let submit =  document.getElementById("submit");	
+		submit.addEventListener("click", ()=> {
+			if(elementeEinlesen("überarbeitet") == false) {return}
+			deleteObj(obectjO)
 			deleteWrapperChilds()
-	
-			wrapper.appendChild(returnButtonBuilder())
-			let con = document.createElement("div")
-			con.setAttribute("class", "container")
-			wrapper.appendChild(con)
-			
-			
-			con.appendChild(inputBuilder("inputFelder","text","nameInput",obectj[0]))
-
-			con.appendChild(inputBuilder("inputFelder","number","telefonInput",obectj[1]))
-			con.appendChild(inputBuilder("inputFelder","email","emailInput",obectj[2]))
-			con.appendChild(buttonBuilder())
-			
-			let submit =  document.getElementById("submit");	
-			submit.addEventListener("click", (objToChange) => {
-				deleteObj(objToChange)
-				elementeEinlesen("überarbeitet");
-				deleteWrapperChilds()
-				homePageBuilder();
-				}
-			)
+			homePageBuilder();
+			})
 })
 	
 	wrapper.appendChild(conw)
 	for (let [key, value] of Object.entries(obj)) {
-			let con = document.createElement("div")
-			con.setAttribute("class", "container")
-			
-			con.appendChild(textAusgabenBuilder(key, "key"));
-			con.appendChild(textAusgabenBuilder(value, "value"));
-			
-			conw.appendChild(con)
+		let con = document.createElement("div")
+		con.setAttribute("class", "container")
+		
+		con.appendChild(textAusgabenBuilder(key, "key"));
+		con.appendChild(textAusgabenBuilder(value, "value"));
+		
+		conw.appendChild(con)
 
 	}
-		let spacer = document.createElement("span")
-		conw.appendChild(spacer)
-		spacer.innerText = "-----------------------"
+	let spacer = document.createElement("span")
+	conw.appendChild(spacer)
+	spacer.innerText = "-----------------------"
+	}}
 
+function objChange(){
+	let objToChange = {};
+	for (let i = 0; i < document.querySelectorAll("p.key").length; i++) {
+	  let key = document.querySelectorAll("p.key")[i].textContent;
+	  let value = document.querySelectorAll("p.value")[i].textContent;
+	  objToChange[key] = value;
+	  }
+	if("telefon" in objToChange){
+		objToChange.telefon = parseInt(objToChange.telefon);
 	}
-
+	
+	
+	return objToChange;
 }
 
-function deleteObj(a){
-		let objToRemove = a
-		
-	
-		objToRemove.telefon = parseInt(objToRemove.telefon);
-			
-		let index = db.findIndex(obj => {
-		  for (let key in objToRemove) {
-			if (obj[key] !== objToRemove[key]) {
-			  return false;
-			}
-		  }
-		  return true;
-		});
 
-		if (index !== -1) {
-		db.splice(index, 1);}		
+function deleteObj(a){
+	a.telefon = parseInt(a.telefon);
+	let index = db.findIndex(obj => {
+	  for (let key in a) {
+		if (obj[key] !== a[key]) {
+		  return false;
+		}
+	  }
+	  return true;
+	});
+
+
+	if (index !== -1) {
+	db.splice(index, 1);}		
 }
 
 window.addEventListener("load",() => {
