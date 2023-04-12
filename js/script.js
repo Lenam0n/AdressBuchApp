@@ -19,32 +19,32 @@ function elementeEinlesen(a){
 	
 		if(document.getElementById("nameInput").value == "" ||
 			!lettOnlyRegex.test(document.getElementById("nameInput").value)) {
-			clearInputs()
+			clearInputs("nameInput")
 			alert("Die Nameneingabe ist ungültig")
 			return false;}
 			else {var nameInput = document.getElementById("nameInput").value}
 		if(document.getElementById("nachnameInput").value == ""||
 			!lettOnlyRegex.test(document.getElementById("nameInput").value)) {
-			clearInputs()
+			clearInputs("nachnameInput")
 			alert("Die Nachnameneingabe ist ungültig")
 			return false;}
 			else {var nachnameInput = document.getElementById("nachnameInput").value}
 		if(!numOnlyRegex.test(document.getElementById("telefonInput").value) ||
 			document.getElementById("telefonInput").value == "" || 
 			document.getElementById("telefonInput").value.length >15){
-			clearInputs()
+			clearInputs("telefonInput")
 			alert("Die Telefoneingabe ist ungültig")
 			return false;}
 			else {var telefonInput = Number(document.getElementById("telefonInput").value)}
-		if(document.getElementById("emailInput").value == ""){
-			clearInputs()
+		if(document.getElementById("telefonInput").value == ""){
+			clearInputs("telefonInput")
 			alert("Die Emaileingabe ist ungültig")
 			return false;}
 			else {var emailInput = document.getElementById("emailInput").value}
 		if(!emailRegex.test(document.getElementById("emailInput").value ||
 			(document.getElementById("emailInput").value.indexOf('@') === -1 &&
 			document.getElementById("emailInput").value.indexOf('.') === -1))){
-			clearInputs()
+			clearInputs("emailInput")
 			alert("Die Emaileingabe ist ungültig")
 			return false;}
 	addToDb(nameInput, nachnameInput , telefonInput, emailInput );
@@ -53,11 +53,14 @@ function elementeEinlesen(a){
 	if(a ==="überarbeitet"){alert("Eintrag wurde überarbeitet")}
 	
 	
-	clearInputs()
+	clearAllInputs()
 	
 	
 }
-function clearInputs(){for(i=0; i < document.getElementsByClassName("inputFelder").length; i++) document.getElementsByClassName("inputFelder")[i].value = "";}
+function clearAllInputs(){for(i=0; i < document.getElementsByClassName("inputFelder").length; i++) document.getElementsByClassName("inputFelder")[i].value = "";}
+
+
+function clearInputs(a){document.getElementById(a).value = "";}
 
 function addToDb(a,b,c,d){
 	if(db.length != 0){
@@ -68,15 +71,18 @@ function addToDb(a,b,c,d){
 	}
 }
 
-function inputBuilder(a,b,c,d){
+function inputBuilder(a,b,c,d,z){
+	
+	test(z)
+	
 	let input = document.createElement("input");
-	Object.entries( { class : a , type : b, id : c, placeholder : d } ).forEach( ( [ key , value ] ) => input.setAttribute( key , value ) );
+	Object.entries( { class : a , type : b, id : c, z : d } ).forEach( ( [ key , value ] ) => input.setAttribute( key , value ) );
 	return input;
 }
-function buttonBuilder(){
+function buttonBuilder(a){
 	let button = document.createElement("button")
-	button.innerText = "Submit"
-	button.setAttribute("id", "submit")
+	button.innerText = a
+	button.setAttribute("id", a)
 
 	return button;
 	
@@ -108,14 +114,20 @@ function wrapperBuilder(){
 	con.setAttribute("class", "container")
 	wrapper.appendChild(con)
 	
-	con.appendChild(inputBuilder("inputFelder","text","nameInput","Name"))
-	con.appendChild(inputBuilder("inputFelder","text","nachnameInput","Nachname"))
-	con.appendChild(inputBuilder("inputFelder","text","telefonInput","Telefonnummer"))
-	con.appendChild(inputBuilder("inputFelder","email","emailInput","E-mail"))
-	con.appendChild( buttonBuilder())
+	con.appendChild(inputBuilder("inputFelder","text","nameInput","Name","placeholder"))
+	con.appendChild(inputBuilder("inputFelder","text","nachnameInput","Nachname","placeholder"))
+	con.appendChild(inputBuilder("inputFelder","text","telefonInput","Telefonnummer","placeholder"))
+	con.appendChild(inputBuilder("inputFelder","email","emailInput","E-mail","placeholder"))
+	con.appendChild( buttonBuilder("submit"))
 	let submit =  document.getElementById("submit");	
 	submit.addEventListener("click", () => {
 		elementeEinlesen("neuer");}
+		)
+	
+	con.appendChild( buttonBuilder("clear"))
+	let clear =  document.getElementById("clear");	
+	clear.addEventListener("click", () => {
+		clearAllInputs();}
 		)
 	}
 
@@ -125,10 +137,17 @@ function deleteWrapperChilds(){
 }}
 
 function arrayEntleeren(){	
+		if(deleteable === false){
+			let check = window.confirm("Willst du alle Einträge wirklich löschen?")
+			if (!check){return }
+			else{ deleteable = true }
+		}
 	if(db.length !== 0){
 		db.length = 0 
 		alert("Alle Kontakte gelöscht")
 	}else{ alert("Du hast keine Kontakte eingetragen") }
+	
+	deleteable = false
 }
 
 
@@ -159,6 +178,7 @@ function ausgebenAllerKontakte(){
 		}
 		deleteObj(objChange())
 		this.remove()
+		deleteable = false
 		
 		})
 		wrapper.appendChild(conw)
@@ -203,11 +223,12 @@ function uberarbeiten(){
 		con.setAttribute("class", "container")
 		wrapper.appendChild(con)
 		
-		con.appendChild(inputBuilder("inputFelder","text","nameInput",obectj[0]))
-		con.appendChild(inputBuilder("inputFelder","text","nachnameInput",obectj[1]))
-		con.appendChild(inputBuilder("inputFelder","text","telefonInput",obectj[2]))
-		con.appendChild(inputBuilder("inputFelder","email","emailInput",obectj[3]))
-		con.appendChild(buttonBuilder())
+		
+		con.appendChild(inputBuilder("inputFelder","text","nameInput",obectj[0],"value"))
+		con.appendChild(inputBuilder("inputFelder","text","nachnameInput",obectj[1],"value"))
+		con.appendChild(inputBuilder("inputFelder","text","telefonInput",obectj[2],"value"))
+		con.appendChild(inputBuilder("inputFelder","email","emailInput",obectj[3],"value"))
+		con.appendChild(buttonBuilder("submit"))
 		
 		let submit =  document.getElementById("submit");	
 		submit.addEventListener("click", ()=> {
