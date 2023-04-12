@@ -72,11 +72,11 @@ function addToDb(a,b,c,d){
 }
 
 function inputBuilder(a,b,c,d,z){
-	
-	test(z)
-	
 	let input = document.createElement("input");
-	Object.entries( { class : a , type : b, id : c, z : d } ).forEach( ( [ key , value ] ) => input.setAttribute( key , value ) );
+	input.setAttribute("class", a);
+	input.setAttribute("type", b);
+	input.setAttribute("id", c);
+	input.setAttribute(z, d);
 	return input;
 }
 function buttonBuilder(a){
