@@ -57,9 +57,9 @@ function wrapperBuilder(){
 	con.appendChild(inputBuilder("inputFelder","text","nachnameInput","Nachname","placeholder"))
 	con.appendChild(inputBuilder("inputFelder","text","telefonInput","Telefonnummer","placeholder"))
 	con.appendChild(inputBuilder("inputFelder","email","emailInput","E-mail","placeholder"))
-	con.appendChild( buttonBuilder("submit"))
 	
-	let submit =  document.getElementById("submit","button-style2");	
+	con.appendChild( buttonBuilder("submit","button-style2"))
+	let submit =  document.getElementById("submit");	
 	submit.addEventListener("click", () => {
 		elementeEinlesen("neuer");})
 	
