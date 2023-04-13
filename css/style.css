@@ -4,14 +4,14 @@
 	box-sizing:0;
 }
 
-#submit{
-	width:4em;
-	height:1.5em;
-}
-
 .button-style1{
 	height:3em;
 	width:9em;
+}
+
+.button-style2{
+	height:1.5em;
+	width:4em;
 }
 
 .container-wrapper{
