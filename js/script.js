@@ -45,6 +45,13 @@ function homeButtonsBuilder (a,b){
 	return button
 }
 
+function textAusgabenBuilder(a,b){
+	let p = document.createElement("p")
+	p.innerText = a;
+	p.setAttribute("class" , b)
+	return p
+}
+
 function wrapperBuilder(){
 	deleteWrapperChilds()
 	
@@ -74,13 +81,6 @@ function homePageBuilder(){
 	wrapper.appendChild(homeButtonsBuilder("ausgebenAllerKontakte()","Alle Kontakte anzeigen lassen"))
 	wrapper.appendChild(homeButtonsBuilder("uberarbeiten()","Kontakte bearbeiten"))
 	wrapper.appendChild(homeButtonsBuilder("arrayEntleeren()","Alle Kontakte löschen"))
-}
-
-function textAusgabenBuilder(a,b){
-	let p = document.createElement("p")
-	p.innerText = a;
-	p.setAttribute("class" , b)
-	return p
 }
 
 //****************  Utility Functions  ****************
@@ -118,14 +118,8 @@ function clearAllInputs(){for(i=0; i < document.getElementsByClassName("inputFel
 
 function clearInputs(a){document.getElementById(a).value = "";}
 
-function addToDb(a,b,c,d){
-	if(db.length != 0){
-		let stelle = (db.length +1)
-		db.push({name  : a, nachname: b, telefon : c, 'e-mail' : d})
-	}else{
-		db.push({name  : a, nachname : b ,telefon : c, 'e-mail' : d})
-	}
-}
+function addToDb(a,b,c,d){ db.push({name  : a, nachname: b, telefon : c, 'e-mail' : d })}
+
 
 //****************  Main Functions  ****************
 
@@ -154,17 +148,14 @@ function elementeEinlesen(a){
 			alert("Die Telefoneingabe ist ungültig")
 			return false;}
 			else {var telefonInput = Number(document.getElementById("telefonInput").value)}
-		if(document.getElementById("telefonInput").value == ""){
-			clearInputs("telefonInput")
-			alert("Die Emaileingabe ist ungültig")
-			return false;}
-			else {var emailInput = document.getElementById("emailInput").value}
-		if(!emailRegex.test(document.getElementById("emailInput").value ||
-			(document.getElementById("emailInput").value.indexOf('@') === -1 &&
-			document.getElementById("emailInput").value.indexOf('.') === -1))){
+			if(!emailRegex.test(document.getElementById("emailInput").value) || 
+					document.getElementById("emailInput").value.match(/@/g).length > 1 ||
+					document.getElementById("emailInput").value === "" ||
+					document.getElementById("emailInput").value.indexOf('.') == -1 ||
+					document.getElementById("emailInput").value.indexOf('@') === -1){
 			clearInputs("emailInput")
 			alert("Die Emaileingabe ist ungültig")
-			return false;}
+			return false;}else {var emailInput = document.getElementById("emailInput").value}
 	addToDb(nameInput, nachnameInput , telefonInput, emailInput );
 	
 	if(a === "neuer"){alert("neuer Eintrag hinzugefügt")}
